@@ -1,12 +1,16 @@
 #!/bin/bash
 CURR_DIR=$(dirname $0);
 if [[ $TRAVIS_PULL_REQUEST = "false" ]]; then
+  printf "Checking out branch: ${TRAVIS_BRANCH}...\n";
   git checkout ${TRAVIS_BRANCH};
   COMMIT_MESSAGE=$(git log -n 1 --pretty=format:"%B");
   if [[ $COMMIT_MESSAGE == *"[force build]"* ]]; then
+    printf "Iterating minor version\n";
     ${CURR_DIR}/versioning/iterate minor -i -q;
   else
+    printf "Iterating patch version\n";
     ${CURR_DIR}/versioning/iterate -i -q;
   fi;
+  printf "Pushing to github.com/zephinzer/docker-image-ci-runners.git...\n";
   git push -q https://zephinzer:${GITHUB_TOKEN}@github.com/zephinzer/docker-image-ci-runners.git --tags;
 fi;
