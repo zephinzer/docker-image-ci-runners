@@ -18,6 +18,7 @@ RUN apk add --update --upgrade --no-cache ${APK_DEPENDENCIES} \
     && mkdir -p ${DIR_INSTALL} \
     && cd ${DIR_INSTALL} \
     && curl https://sdk.cloud.google.com | bash \
+    && exec -l ${SHELL} \
     && gcloud config set disable_usage_reporting true \
     && gcloud components install alpha beta container-builder-local docker-credential-gcr kubectl -q \
     && rm -rf ${PATHS_TO_REMOVE}}
