@@ -25,25 +25,27 @@ jobs:
         - ./${TAG_NAME}/publish zephinzer/${TAG_NAME}
     - stage: build
       env:
-        - TAG_NAME=ci-runner-node
-        - CODENAME=argon
+        - TAG_NAME=ci-runner-node/argon
       script:
-        - ./scripts/build ${TAG_NAME} CODENAME=${CODENAME}
-        - ./${TAG_NAME}/publish zephinzer/${TAG_NAME}
+        - ./scripts/build ${TAG_NAME}
+        - docker tag zephinzer/${TAG_NAME}:next zephinzer/ci-runner-node:next
+        - ./${TAG_NAME}/publish zephinzer/ci-runner-node
     - stage: build
       env:
         - TAG_NAME=ci-runner-node
         - CODENAME=boron
       script:
-        - ./scripts/build ${TAG_NAME} CODENAME=${CODENAME}
-        - ./${TAG_NAME}/publish zephinzer/${TAG_NAME}
+        - ./scripts/build ${TAG_NAME}
+        - docker tag zephinzer/${TAG_NAME}:next zephinzer/ci-runner-node:next
+        - ./${TAG_NAME}/publish zephinzer/ci-runner-node
     - stage: build
       env:
         - TAG_NAME=ci-runner-node
         - CODENAME=carbon
       script:
-        - ./scripts/build ${TAG_NAME} CODENAME=${CODENAME}
-        - ./${TAG_NAME}/publish zephinzer/${TAG_NAME}
+        - ./scripts/build ${TAG_NAME}
+        - docker tag zephinzer/${TAG_NAME}:next zephinzer/ci-runner-node:next
+        - ./${TAG_NAME}/publish zephinzer/ci-runner-node
     - stage: publish
       script:
         - ./scripts/publish

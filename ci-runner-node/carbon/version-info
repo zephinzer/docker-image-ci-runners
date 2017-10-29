@@ -1,0 +1,13 @@
+#!/bin/sh
+VERSION_GIT="$(git --version | cut -d ' ' -f 3)";
+VERSION_NODE=$(node -v | cut -d 'v' -f 2);
+VERSION_YARN=$(yarn -v);
+ssh -V &>/tmp/sshv \
+  && VERSION_SSL=$(cat /tmp/sshv) \
+  && rm -rf /tmp/sshv;
+VERSION_OPENSSH="$(printf "${VERSION_SSL}" | cut -f 1 -d ' ' | cut -f 2 -d '_' | cut -f 1 -d ',')";
+VERSION_LIBRESSL="$(printf "${VERSION_SSL}" | cut -f 3 -d ' ')";
+printf "git:${VERSION_GIT}\n";
+printf "node:${VERSION_NODE}\n";
+printf "yarn:${VERSION_YARN}\n";
+printf "openssh:${VERSION_OPENSSH}\n";
