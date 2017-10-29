@@ -5,13 +5,32 @@ if [[ "${TAG_NAME}" = "" ]]; then
   printf "\n\e[31m\e[1m[!] Please specify the image (directory name) to build as the first argument.\e[0m\n";
   exit 1;
 fi;
-REPOSITORY_URL=zephinzer/${TAG_NAME};
-VERSION=$(./scripts/versioning get-latest -q);
-docker build -f ./${TAG_NAME}/Dockerfile -t ${REPOSITORY_URL}:next ${CURR_DIR}/../${TAG_NAME};
 
-if [[ $* = *"--push"* ]] || [[ $* = *"-p"* ]]; then
-  docker tag ${REPOSITORY_URL}:next ${REPOSITORY_URL}:${VERSION};
-  docker push ${REPOSITORY_URL}:${VERSION};
-  docker tag ${REPOSITORY_URL}:next ${REPOSITORY_URL}:latest;
-  docker push ${REPOSITORY_URL}:latest;
+REPOSITORY_URL=zephinzer/${TAG_NAME};
+NEXT_TAG="${REPOSITORY_URL}:next";
+LATEST_TAG="${REPOSITORY_URL}:latest";
+
+docker build -f ./${TAG_NAME}/Dockerfile -t "${NEXT_TAG}" ${CURR_DIR}/../${TAG_NAME};
+VERSIONS=$(docker run ${NEXT_TAG});
+VERSION_GCLOUD=$(printf "${VERSIONS}" | grep gcloud | cut -f 2 -d ':');
+VERSION_GIT=$(printf "${VERSIONS}" | grep git | cut -f 2 -d ':');
+VERSION_DOCKER=$(printf "${VERSIONS}" | grep docker | cut -f 2 -d ':');
+VERSION_KUBECTL=$(printf "${VERSIONS}" | grep kubectl | cut -f 2 -d ':');
+EXISTENCE_TAG="gcloud-${VERSION_GCLOUD}";
+
+EXISTENCE_REPO_URL="${REPOSITORY_URL}:${EXISTENCE_TAG}";
+
+printf "Checking existence of [${EXISTENCE_REPO_URL}]...";
+$(docker pull ${EXISTENCE_REPO_URL}) && EXISTS=$?;
+if [[ "$EXISTS" = "0" ]]; then
+  printf "[${EXISTENCE_REPO_URL}] found. Skipping push.\n";
+  echo exists;
+else
+  printf "[${EXISTENCE_REPO_URL}] not found. Pushing new image...\n";
+  printf "Pushing [${EXISTENCE_REPO_URL}]... ";
+  docker tag ${NEXT_TAG} ${EXISTENCE_REPO_URL};
+  docker push ${EXISTENCE_REPO_URL};
+  printf "Pushing [${NEXT_TAG}]... ";
+  docker tag ${NEXT_TAG} ${LATEST_TAG};
+  docker push ${LATEST_TAG};
 fi;

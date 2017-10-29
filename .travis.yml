@@ -28,7 +28,7 @@ jobs:
       env:
         - TAG_NAME=gke-deployer
       script:
-        - ./scripts/build ${TAG_NAME}
+        - ./scripts/build ${TAG_NAME} --push
     - stage: publish
       script:
         - ./scripts/publish
