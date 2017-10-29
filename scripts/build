@@ -1,0 +1,17 @@
+#!/bin/bash
+CURR_DIR=$(dirname $0);
+TAG_NAME=$1;
+if [[ "${TAG_NAME}" = "" ]]; then
+  printf "\n\e[31m\e[1m[!] Please specify the image (directory name) to build as the first argument.\e[0m\n";
+  exit 1;
+fi;
+REPOSITORY_URL=zephinzer/${TAG_NAME};
+VERSION=$(./scripts/versioning get-latest -q);
+docker build -f ./${TAG_NAME}/Dockerfile -t ${REPOSITORY_URL}:next ${CURR_DIR}/../${TAG_NAME};
+
+if [[ $* = *"--push"* ]] || [[ $* = *"-p"* ]]; then
+  docker tag ${REPOSITORY_URL}:next ${REPOSITORY_URL}:${VERSION};
+  docker push ${REPOSITORY_URL}:${VERSION};
+  docker tag ${REPOSITORY_URL}:next ${REPOSITORY_URL}:latest;
+  docker push ${REPOSITORY_URL}:latest;
+fi;
