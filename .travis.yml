@@ -11,17 +11,39 @@ notifications:
 stages:
   - build
   - publish
+before_script:
+  - docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_PASSWORD}";
+after_script:
+  - docker logout
 jobs:
-  include: 
+  include:
     - stage: build
       env:
         - TAG_NAME=gke-deployer
-      before_script:
-        - docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_PASSWORD}";
-      after_script:
-        - docker logout
       script:
-        - ./scripts/build ${TAG_NAME} --push
+        - ./scripts/build ${TAG_NAME}
+        - ./${TAG_NAME}/publish zephinzer/${TAG_NAME}
+    - stage: build
+      env:
+        - TAG_NAME=ci-runner-node
+        - CODENAME=argon
+      script:
+        - ./scripts/build ${TAG_NAME} CODENAME=${CODENAME}
+        - ./${TAG_NAME}/publish zephinzer/${TAG_NAME}
+    - stage: build
+      env:
+        - TAG_NAME=ci-runner-node
+        - CODENAME=boron
+      script:
+        - ./scripts/build ${TAG_NAME} CODENAME=${CODENAME}
+        - ./${TAG_NAME}/publish zephinzer/${TAG_NAME}
+    - stage: build
+      env:
+        - TAG_NAME=ci-runner-node
+        - CODENAME=carbon
+      script:
+        - ./scripts/build ${TAG_NAME} CODENAME=${CODENAME}
+        - ./${TAG_NAME}/publish zephinzer/${TAG_NAME}
     - stage: publish
       script:
         - ./scripts/publish

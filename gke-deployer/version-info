@@ -1,5 +1,9 @@
 #!/bin/sh
-printf "gcloud:$(gcloud version --format='json' | jq '."Google Cloud SDK"' | cut -d '"' -f 2)\n";
-printf "git:$(git --version | cut -d ' ' -f 3)\n";
-printf "docker:$(docker -v | cut -f 5 -d ' ')\n";
-printf "kubectl:$(kubectl version --client --output='json' | jq '.clientVersion|.gitVersion' | cut -d '"' -f 2)\n";
+VERSION_GCLOUD="$(gcloud version --format='json' | jq '."Google Cloud SDK"' | cut -d '"' -f 2)";
+VERSION_GIT="$(git --version | cut -d ' ' -f 3)";
+VERSION_DOCKER="$(docker -v | cut -f 5 -d ' ')";
+VERSION_KUBECTL="$(kubectl version --client --output='json' | jq '.clientVersion|.gitVersion' | cut -d '"' -f 2)";
+printf "gcloud:${VERSION_GCLOUD}\n";
+printf "git:${VERSION_GIT}\n";
+printf "docker:${VERSION_DOCKER}\n";
+printf "kubectl:${VERSION_KUBECTL}\n";

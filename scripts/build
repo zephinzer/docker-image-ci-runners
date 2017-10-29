@@ -1,39 +1,22 @@
 #!/bin/bash
 CURR_DIR=$(dirname $0);
 TAG_NAME=$1;
+BUILD_ARGS=$2;
 if [[ "${TAG_NAME}" = "" ]]; then
-  printf "\n\e[31m\e[1m[!] Please specify the image (directory name) to build as the first argument.\e[0m\n";
+  printf "\n\e[31m\e[1m[!] Specify the image (directory name) to build as the first argument.\e[0m\n";
   exit 1;
 fi;
 
 REPOSITORY_URL=zephinzer/${TAG_NAME};
 NEXT_TAG="${REPOSITORY_URL}:next";
-LATEST_TAG="${REPOSITORY_URL}:latest";
-
-docker build -f ./${TAG_NAME}/Dockerfile -t "${NEXT_TAG}" ${CURR_DIR}/../${TAG_NAME};
-VERSIONS=$(docker run ${NEXT_TAG});
-VERSION_GCLOUD=$(printf "${VERSIONS}" | grep gcloud | cut -f 2 -d ':');
-VERSION_GIT=$(printf "${VERSIONS}" | grep git | cut -f 2 -d ':');
-VERSION_DOCKER=$(printf "${VERSIONS}" | grep docker | cut -f 2 -d ':');
-VERSION_KUBECTL=$(printf "${VERSIONS}" | grep kubectl | cut -f 2 -d ':');
-EXISTENCE_TAG="gcloud-${VERSION_GCLOUD}_docker-${VERSION_DOCKER}_kubectl-${VERSION_KUBECTL}_git-${VERSION_GIT}";
-EXISTENCE_REPO_URL="${REPOSITORY_URL}:${EXISTENCE_TAG}";
-GCLOUD_VERSION_REPO_URL="${REPOSITORY_URL}:${VERSION_GCLOUD}";
-
-printf "Checking existence of [${EXISTENCE_REPO_URL}]...";
-$(docker pull ${EXISTENCE_REPO_URL}) && EXISTS=$?;
-if [[ "$EXISTS" = "0" ]]; then
-  printf "[${EXISTENCE_REPO_URL}] found. Skipping push.\n";
-  echo exists;
+if [[ "${BUILD_ARGS}" = "" ]]; then
+  ADDITIONAL_BUILD_ARGS="$(echo "${BUILD_ARGS}" | sed -e $'s|,|\\\n|g' | xargs -I @ echo '--build-arg @')";
 else
-  printf "[${EXISTENCE_REPO_URL}] not found. Pushing new image...\n";
-  printf "Pushing [${EXISTENCE_REPO_URL}]... ";
-  docker tag ${NEXT_TAG} ${EXISTENCE_REPO_URL};
-  docker push ${EXISTENCE_REPO_URL};
-  printf "Pushing [${GCLOUD_VERSION_REPO_URL}]... ";
-  docker tag ${NEXT_TAG} ${GCLOUD_VERSION_REPO_URL};
-  docker push ${GCLOUD_VERSION_REPO_URL};
-  printf "Pushing [${NEXT_TAG}]... ";
-  docker tag ${NEXT_TAG} ${LATEST_TAG};
-  docker push ${LATEST_TAG};
+  ADDITIONAL_BUILD_ARGS="";
 fi;
+
+docker build \
+  ${ADDITIONAL_BUILD_ARGS} \
+  --file ./${TAG_NAME}/Dockerfile \
+  --tag "${NEXT_TAG}" \
+  ${CURR_DIR}/../${TAG_NAME};
