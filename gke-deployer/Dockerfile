@@ -15,9 +15,9 @@ ENV PATHS_TO_REMOVE="\
   ~/.cache/pip/*"
 RUN apk add --update --upgrade --no-cache ${APK_DEPENDENCIES} \
     && pip --no-cache-dir install ${PIP_DEPENDENCIES} \
-    && mkdir -p ${DIR_GCLOUD_SDK} \
-    && curl -o ${DIR_GCLOUD_SDK}/install.sh https://sdk.cloud.google.com \
-    && chmod 550 ${DIR_GCLOUD_SDK}/install.sh \
+    && mkdir -p ${DIR_INSTALL} \
+    && curl -o ${DIR_INSTALL}/install.sh https://sdk.cloud.google.com \
+    && chmod 550 ${DIR_INSTALL}/install.sh \
     && ${DIR_GCLOUD_SDK}/install.sh --disable-prompts --install-dir=${DIR_INSTALL} \
     && source ${DIR_GCLOUD_SDK}/path.bash.inc \
     && gcloud config set disable_usage_reporting true \
