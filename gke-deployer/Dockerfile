@@ -16,9 +16,9 @@ ENV PATHS_TO_REMOVE="\
 RUN apk add --update --upgrade --no-cache ${APK_DEPENDENCIES} \
     && pip --no-cache-dir install ${PIP_DEPENDENCIES} \
     && mkdir -p ${DIR_INSTALL} \
-    && cd ${DIR_INSTALL} \
-    && curl https://sdk.cloud.google.com | bash \
-    && exec -l ${SHELL} \
+    && curl -o ${DIR_GCLOUD_SDK}/install.sh https://sdk.cloud.google.com \
+    && ${DIR_GCLOUD_SDK}/install.sh -q \
+    && source ${DIR_GCLOUD_SDK}/path.bash.inc \
     && gcloud config set disable_usage_reporting true \
     && gcloud components install alpha beta container-builder-local docker-credential-gcr kubectl -q \
     && rm -rf ${PATHS_TO_REMOVE}}
