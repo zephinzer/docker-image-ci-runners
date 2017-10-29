@@ -16,6 +16,10 @@ jobs:
     - stage: build
       env:
         - TAG_NAME=gke-deployer
+      before_script:
+        - docker login -u "${DOCKER_HUB_USERNAME}" -p "${DOCKER_HUB_PASSWORD}";
+      after_script:
+        - docker logout
       script:
         - ./scripts/build ${TAG_NAME} --push
     - stage: publish
