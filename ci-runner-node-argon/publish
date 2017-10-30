@@ -1,7 +1,7 @@
 #!/bin/bash
 REPOSITORY_URL=$1;
 
-TAG="${REPOSITORY_URL}:next";
+TAG="${REPOSITORY_URL}:argon";
 
 VERSIONS=$(docker run ${TAG});
 VERSION_GIT=$(printf "${VERSIONS}" | grep git | cut -f 2 -d ':');
@@ -19,6 +19,8 @@ if [[ "$EXISTS" = "0" ]]; then
   echo exists;
 else
   printf "[${EXISTENCE_REPO_URL}] not found. Pushing new image...\n";
+  printf "Pushing [${TAG}]... ";
+  docker push ${TAG};
   printf "Pushing [${EXISTENCE_REPO_URL}]... ";
   docker tag ${TAG} ${EXISTENCE_REPO_URL};
   docker push ${EXISTENCE_REPO_URL};

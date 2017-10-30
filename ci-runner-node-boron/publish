@@ -1,0 +1,30 @@
+#!/bin/bash
+REPOSITORY_URL=$1;
+
+TAG="${REPOSITORY_URL}:boron";
+
+VERSIONS=$(docker run ${TAG});
+VERSION_GIT=$(printf "${VERSIONS}" | grep git | cut -f 2 -d ':');
+VERSION_NODE=$(printf "${VERSIONS}" | grep node | cut -f 2 -d ':');
+VERSION_YARN=$(printf "${VERSIONS}" | grep yarn | cut -f 2 -d ':');
+VERSION_OPENSSH=$(printf "${VERSIONS}" | grep openssh | cut -f 2 -d ':');
+EXISTENCE_TAG="node-${VERSION_NODE}_yarn-${VERSION_YARN}_git-${VERSION_GIT}_openssh-${VERSION_OPENSSH}";
+EXISTENCE_REPO_URL="${REPOSITORY_URL}:${EXISTENCE_TAG}";
+NODE_VERSION_REPO_URL="${REPOSITORY_URL}:${VERSION_NODE}";
+
+printf "Checking existence of [${EXISTENCE_REPO_URL}]...";
+$(docker pull ${EXISTENCE_REPO_URL}) && EXISTS=$?;
+if [[ "$EXISTS" = "0" ]]; then
+  printf "[${EXISTENCE_REPO_URL}] found. Skipping push.\n";
+  echo exists;
+else
+  printf "[${EXISTENCE_REPO_URL}] not found. Pushing new image...\n";
+  printf "Pushing [${TAG}]... ";
+  docker push ${TAG};
+  printf "Pushing [${EXISTENCE_REPO_URL}]... ";
+  docker tag ${TAG} ${EXISTENCE_REPO_URL};
+  docker push ${EXISTENCE_REPO_URL};
+  printf "Pushing [${NODE_VERSION_REPO_URL}]... ";
+  docker tag ${TAG} ${NODE_VERSION_REPO_URL};
+  docker push ${NODE_VERSION_REPO_URL};
+fi;
