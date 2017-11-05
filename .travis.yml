@@ -25,7 +25,7 @@ jobs:
         - ./${TAG_NAME}/publish zephinzer/${TAG_NAME}
     - stage: build
       env:
-        - TAG_NAME=docker-runner
+        - TAG_NAME=ci-runner-docker
       script:
         - ./scripts/build ${TAG_NAME}
         - ./${TAG_NAME}/publish zephinzer/${TAG_NAME}
