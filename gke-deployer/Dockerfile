@@ -1,6 +1,8 @@
 # **IMPORTANT**
 # The following environmen
 FROM iron/base:3.4
+LABEL maintainer="dev@joeir.net" \
+      description="Google Container Engine deployer container for use in CI pipelines"
 ARG GCLOUD_SDK_VERSION="177.0.0"
 ARG GCLOUD_SDK_URL="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_SDK_VERSION}-linux-x86_64.tar.gz"
 ENV APK_DEPENDENCIES="bash curl git jq python py-pip make docker" \

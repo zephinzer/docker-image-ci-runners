@@ -1,4 +1,6 @@
 FROM zephinzer/alpine-node:latest-boron
+LABEL maintainer="dev@joeir.net" \
+      description="Node Boron container for use in CI pipelines"
 ENV APK_DEPENDENCIES="bash curl git jq openssh python py-pip make docker" \
     PIP_DEPENDENCIES="docker-compose"
 RUN apk add --update --upgrade --no-cache ${APK_DEPENDENCIES} \

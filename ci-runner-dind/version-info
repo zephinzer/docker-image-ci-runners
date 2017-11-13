@@ -1,0 +1,13 @@
+#!/bin/sh
+VERSION_GIT="$(git --version | cut -d ' ' -f 3)";
+VERSION_DOCKER="$(docker -v | cut -f 5 -d ' ')";
+VERSION_DOCKER_COMPOSE="$(docker-compose -v | cut -f3 -d' ' | cut -f1 -d',')";
+ssh -V &>/tmp/sshv \
+  && VERSION_SSL=$(cat /tmp/sshv) \
+  && rm -rf /tmp/sshv;
+VERSION_OPENSSH="$(printf "${VERSION_SSL}" | cut -f 1 -d ' ' | cut -f 2 -d '_' | cut -f 1 -d ',')";
+VERSION_LIBRESSL="$(printf "${VERSION_SSL}" | cut -f 3 -d ' ')";
+printf "git:${VERSION_GIT}\n";
+printf "docker:${VERSION_DOCKER}\n";
+printf "docker-compose:${VERSION_DOCKER_COMPOSE}\n";
+printf "openssh:${VERSION_OPENSSH}\n";
