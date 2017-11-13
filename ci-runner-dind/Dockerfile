@@ -12,5 +12,6 @@ RUN apk add --update --upgrade --no-cache ${APK_DEPENDENCIES}} \
       ~/.cache/pip/* \
       /var/cache/misc/*
 COPY ./version-info /usr/bin/
+WORKDIR ["/"]
 ENTRYPOINT ["version-info"]
 VOLUME ["/var/run/docker.sock", "/cache"]
