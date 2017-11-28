@@ -13,6 +13,7 @@ ENV PATHS_TO_REMOVE="\
 RUN apk update \
     && apk upgrade \
     && apk add --no-cache ${APK_DEPENDENCIES} \
+    && pip install --upgrade pip \
     && pip --no-cache-dir install ${PIP_DEPENDENCIES}
 ADD ./version-info /usr/bin/
 WORKDIR ["/"]
